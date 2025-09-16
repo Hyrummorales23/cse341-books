@@ -1,0 +1,110 @@
+@baseUrl = https://cse341-books-p8xd.onrender.com
+
+### -------------------- AUTHORS ENDPOINTS --------------------
+
+### 1. GET ALL AUTHORS
+GET {{baseUrl}}/authors HTTP/1.1
+
+### 2. GET SINGLE AUTHOR BY ID (Replace with actual ID from your database)
+GET {{baseUrl}}/authors/REPLACE_WITH_ACTUAL_AUTHOR_ID HTTP/1.1
+
+### 3. CREATE A NEW AUTHOR
+POST {{baseUrl}}/authors HTTP/1.1
+Content-Type: application/json
+
+{
+  "firstName": "Isaac",
+  "lastName": "Asimov",
+  "dateOfBirth": "1920-01-02",
+  "dateOfDeath": "1992-04-06",
+  "nationality": "American",
+  "biography": "Isaac Asimov was an American writer and professor of biochemistry. He was known for his works of science fiction and popular science.",
+  "website": "https://www.asimovonline.com",
+  "isActive": false
+}
+
+### 4. UPDATE AN AUTHOR (Replace with actual ID)
+PUT {{baseUrl}}/authors/REPLACE_WITH_ACTUAL_AUTHOR_ID HTTP/1.1
+Content-Type: application/json
+
+{
+  "biography": "Updated biography for this amazing author...",
+  "isActive": true
+}
+
+### 5. DELETE AN AUTHOR (Replace with actual ID)
+DELETE {{baseUrl}}/authors/REPLACE_WITH_ACTUAL_AUTHOR_ID HTTP/1.1
+
+### -------------------- BOOKS ENDPOINTS --------------------
+
+### 6. GET ALL BOOKS
+GET {{baseUrl}}/books HTTP/1.1
+
+### 7. GET SINGLE BOOK BY ID (Replace with actual ID)
+GET {{baseUrl}}/books/REPLACE_WITH_ACTUAL_BOOK_ID HTTP/1.1
+
+### 8. CREATE A NEW BOOK (Replace with actual Author ID)
+POST {{baseUrl}}/books HTTP/1.1
+Content-Type: application/json
+
+{
+  "title": "Foundation",
+  "authorId": "REPLACE_WITH_ACTUAL_AUTHOR_ID",
+  "summary": "A epic science fiction series about the fall and rebirth of a galactic empire.",
+  "isbn": "978-0553293357",
+  "genre": ["Science Fiction", "Space Opera"],
+  "publishedYear": 1951,
+  "pageCount": 255
+}
+
+### 9. UPDATE A BOOK (Replace with actual Book ID)
+PUT {{baseUrl}}/books/REPLACE_WITH_ACTUAL_BOOK_ID HTTP/1.1
+Content-Type: application/json
+
+{
+  "summary": "Updated summary for this classic science fiction novel...",
+  "pageCount": 260
+}
+
+### 10. DELETE A BOOK (Replace with actual ID)
+DELETE {{baseUrl}}/books/REPLACE_WITH_ACTUAL_BOOK_ID HTTP/1.1
+
+### -------------------- ROOT & DOCS --------------------
+
+### 11. GET ROOT ENDPOINT
+GET {{baseUrl}}/ HTTP/1.1
+
+### 12. GET API DOCUMENTATION
+GET {{baseUrl}}/api-docs HTTP/1.1
+
+### -------------------- TEST VALIDATION ERRORS --------------------
+
+### 13. TEST AUTHOR VALIDATION ERROR (Missing required fields)
+POST {{baseUrl}}/authors HTTP/1.1
+Content-Type: application/json
+
+{
+  "firstName": "Test",
+  "website": "invalid-url" // This should cause a validation error
+}
+
+### 14. TEST BOOK VALIDATION ERROR (Invalid authorId)
+POST {{baseUrl}}/books HTTP/1.1
+Content-Type: application/json
+
+{
+  "title": "Test Book",
+  "authorId": "invalid-id-format", // This should cause a validation error
+  "publishedYear": 999 // This should cause validation error (year too early)
+}
+
+### -------------------- TEST ERROR HANDLING --------------------
+
+### 15. TEST GET NON-EXISTENT AUTHOR
+GET {{baseUrl}}/authors/123456789012345678901234 HTTP/1.1
+
+### 16. TEST GET NON-EXISTENT BOOK
+GET {{baseUrl}}/books/123456789012345678901234 HTTP/1.1
+
+### 17. TEST DELETE AUTHOR WITH BOOKS (Should fail with your validation)
+DELETE {{baseUrl}}/authors/REPLACE_WITH_AUTHOR_ID_THAT_HAS_BOOKS
