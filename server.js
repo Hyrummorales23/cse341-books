@@ -16,7 +16,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // Define Routes
-app.use('/api', require('./routes'));
+app.use('/authors', require('./routes/authors'));
+app.use('/books', require('./routes/books'));
+
+// main router 
+app.use('/', require('./routes'));
 
 // Swagger Documentation
 require('./swagger/swagger')(app);

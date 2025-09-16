@@ -70,7 +70,7 @@ const { bookValidationRules, validateBook } = require('../middleware/validation/
 
 /**
  * @swagger
- * /api/books:
+ * /books:
  *   get:
  *     summary: Returns the list of all books
  *     tags: [Books]
@@ -95,7 +95,7 @@ router.route('/').get(getBooks);
 
 /**
  * @swagger
- * /api/books:
+ * /books:
  *   post:
  *     summary: Create a new book
  *     tags: [Books]
@@ -119,7 +119,7 @@ router.route('/').post(bookValidationRules(), validateBook, createBook);
 
 /**
  * @swagger
- * /api/books/{id}:
+ * /books/{id}:
  *   get:
  *     summary: Get a book by its id
  *     tags: [Books]
@@ -144,7 +144,7 @@ router.route('/:id').get(getBook);
 
 /**
  * @swagger
- * /api/books/{id}:
+ * /books/{id}:
  *   put:
  *     summary: Update a book by its id
  *     tags: [Books]
@@ -177,7 +177,7 @@ router.route('/:id').put(bookValidationRules(), validateBook, updateBook);
 
 /**
  * @swagger
- * /api/books/{id}:
+ * /books/{id}:
  *   delete:
  *     summary: Delete a book by its id
  *     tags: [Books]

@@ -10,11 +10,11 @@ const options = {
       description: 'A simple Express Library API for managing Books and Authors',
     },
     servers: [
-      {
-        url: process.env.RENDER_EXTERNAL_URL || `http://localhost:${process.env.PORT}`,
-        description: 'Live Server',
-      },
-    ],
+  {
+    url: process.env.RENDER_EXTERNAL_URL || `http://localhost:${process.env.PORT}`,
+    description: 'Live Server',
+  },
+],
     components: {
       securitySchemes: {
         // I'll add this in Week 4 for OAuth

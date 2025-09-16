@@ -80,7 +80,7 @@ const { authorValidationRules, validateAuthor } = require('../middleware/validat
 
 /**
  * @swagger
- * /api/authors:
+ * /authors:
  *   get:
  *     summary: Returns the list of all authors
  *     tags: [Authors]
@@ -105,7 +105,7 @@ router.route('/').get(getAuthors);
 
 /**
  * @swagger
- * /api/authors:
+ * /authors:
  *   post:
  *     summary: Create a new author
  *     tags: [Authors]
@@ -129,7 +129,7 @@ router.route('/').post(authorValidationRules(), validateAuthor, createAuthor);
 
 /**
  * @swagger
- * /api/authors/{id}:
+ * /authors/{id}:
  *   get:
  *     summary: Get an author by id
  *     tags: [Authors]
@@ -154,7 +154,7 @@ router.route('/:id').get(getAuthor);
 
 /**
  * @swagger
- * /api/authors/{id}:
+ * /authors/{id}:
  *   put:
  *     summary: Update an author by id
  *     tags: [Authors]
@@ -187,7 +187,7 @@ router.route('/:id').put(authorValidationRules(), validateAuthor, updateAuthor);
 
 /**
  * @swagger
- * /api/authors/{id}:
+ * /authors/{id}:
  *   delete:
  *     summary: Delete an author by id
  *     tags: [Authors]
