@@ -35,7 +35,23 @@ const bookSchema = new mongoose.Schema({
     min: 1
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 });
+
+// Format timestamps to be more readable
+bookSchema.methods.toJSON = function() {
+  const book = this.toObject();
+  
+  if (book.createdAt) {
+    book.createdAt = book.createdAt.toISOString();
+  }
+  if (book.updatedAt) {
+    book.updatedAt = book.updatedAt.toISOString();
+  }
+  
+  return book;
+};
 
 module.exports = mongoose.model('Book', bookSchema);

@@ -36,7 +36,9 @@ const authorSchema = new mongoose.Schema({
     default: true
   }
 }, {
-  timestamps: true // Adds createdAt and updatedAt automatically
+  timestamps: true, // Adds createdAt and updatedAt automatically
+  toJSON: { virtuals: true }, // Ensure virtuals are included in JSON output
+  toObject: { virtuals: true } // Ensure virtuals are included when converting to objects
 });
 
 // Virtual for author's full name
@@ -46,7 +48,27 @@ authorSchema.virtual('name').get(function () {
 
 // Virtual for author's URL
 authorSchema.virtual('url').get(function () {
-  return `/api/authors/${this._id}`;
+  return `/authors/${this._id}`;
 });
+
+// Format date to YYYY-MM-DD without time information
+authorSchema.methods.toJSON = function() {
+  const author = this.toObject();
+  
+  if (author.dateOfBirth) {
+    author.dateOfBirth = author.dateOfBirth.toISOString().split('T')[0];
+  }
+  if (author.dateOfDeath) {
+    author.dateOfDeath = author.dateOfDeath.toISOString().split('T')[0];
+  }
+  if (author.createdAt) {
+    author.createdAt = author.createdAt.toISOString();
+  }
+  if (author.updatedAt) {
+    author.updatedAt = author.updatedAt.toISOString();
+  }
+  
+  return author;
+};
 
 module.exports = mongoose.model('Author', authorSchema);
