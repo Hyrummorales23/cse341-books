@@ -1,4 +1,5 @@
 const Author = require('../models/Author');
+const Book = require('../models/Book')
 const asyncHandler = require('express-async-handler'); // To avoid try/catch in every function
 
 // @desc    Get all authors
@@ -73,12 +74,12 @@ const deleteAuthor = asyncHandler(async (req, res) => {
     throw new Error('Author not found');
   }
 
-  // Check if author has books?
-  const books = await Book.find({ author: req.params.id });
-   if (books.length > 0) {
-     res.status(400);
-     throw new Error('This author has books and cannot be deleted.');
-   }
+  // Check if author has books (prevent deletion if they do)
+  const books = await Book.find({ authorId: req.params.id });
+  if (books.length > 0) {
+    res.status(400);
+    throw new Error('This author has books and cannot be deleted. Delete their books first.');
+  }
 
   await author.deleteOne();
   res.status(200).json({
