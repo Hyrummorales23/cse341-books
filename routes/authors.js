@@ -8,6 +8,7 @@ const {
   deleteAuthor,
 } = require('../controllers/authorsController');
 const { authorValidationRules, validateAuthor } = require('../middleware/validation/authorsValidation');
+const { isAuthenticated } = require('../middleware/auth');
 
 /**
  * @swagger
@@ -125,7 +126,7 @@ router.route('/').get(getAuthors);
  *       400:
  *         description: Validation error (invalid input)
  */
-router.route('/').post(authorValidationRules(), validateAuthor, createAuthor);
+router.route('/').post(isAuthenticated, authorValidationRules(), validateAuthor, createAuthor);
 
 /**
  * @swagger
@@ -183,7 +184,7 @@ router.route('/:id').get(getAuthor);
  *       404:
  *         description: The author was not found
  */
-router.route('/:id').put(authorValidationRules(), validateAuthor, updateAuthor);
+router.route('/:id').put(isAuthenticated, authorValidationRules(), validateAuthor, updateAuthor);
 
 /**
  * @swagger
@@ -204,6 +205,6 @@ router.route('/:id').put(authorValidationRules(), validateAuthor, updateAuthor);
  *       404:
  *         description: The author was not found
  */
-router.route('/:id').delete(deleteAuthor);
+router.route('/:id').delete(isAuthenticated, deleteAuthor);
 
 module.exports = router;

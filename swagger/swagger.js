@@ -5,27 +5,50 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Library API',
-      version: '1.0.0',
-      description: 'A simple Express Library API for managing Books and Authors',
+      title: 'Library API with OAuth',
+      version: '2.0.0',
+      description: 'A secure Express Library API for managing Books and Authors with Google OAuth authentication',
     },
     servers: [
-  {
-    url: process.env.RENDER_EXTERNAL_URL || `http://localhost:${process.env.PORT}`,
-    description: 'Live Server',
-  },
-],
+      {
+        url: process.env.RENDER_EXTERNAL_URL || `http://localhost:${process.env.PORT}`,
+        description: 'Live Server',
+      },
+    ],
     components: {
       securitySchemes: {
-        // I'll add this in Week 4 for OAuth
+        googleOAuth: {
+          type: 'oauth2',
+          flows: {
+            authorizationCode: {
+              authorizationUrl: '/auth/google',
+              tokenUrl: '/auth/google/callback',
+              scopes: {
+                'profile': 'Access your profile information',
+                'email': 'Access your email address'
+              }
+            }
+          }
+        }
       }
-    }
+    },
+    security: [{
+      googleOAuth: ['profile', 'email']
+    }]
   },
-  apis: ['./routes/*.js'], // Path to the API docs files (I'll add JSDoc comments to routes)
+  apis: ['./routes/*.js'],
 };
 
 const specs = swaggerJsdoc(options);
 
 module.exports = (app) => {
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, { explorer: true }));
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, { 
+    explorer: true,
+    swaggerOptions: {
+      oauth: {
+        clientId: process.env.GOOGLE_CLIENT_ID,
+        appName: 'Library API'
+      }
+    }
+  }));
 };

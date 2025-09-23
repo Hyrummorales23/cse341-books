@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
-// Root route - This will now be the only route under '/'
+// Root route
 router.get('/', (req, res) => {
-  res.send('Hello from the Books and Authors API! Visit /api-docs for documentation.');
+  const authStatus = req.isAuthenticated() ? 'Authenticated' : 'Not Authenticated';
+  res.send(`Hello from the Books and Authors API! Authentication Status: ${authStatus}. Visit /api-docs for documentation.`);
 });
 
 module.exports = router;

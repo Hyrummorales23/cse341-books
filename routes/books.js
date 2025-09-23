@@ -8,6 +8,7 @@ const {
   deleteBook,
 } = require('../controllers/booksController');
 const { bookValidationRules, validateBook } = require('../middleware/validation/booksValidation');
+const { isAuthenticated } = require('../middleware/auth');
 
 /**
  * @swagger
@@ -115,7 +116,7 @@ router.route('/').get(getBooks);
  *       400:
  *         description: Validation error (invalid input)
  */
-router.route('/').post(bookValidationRules(), validateBook, createBook);
+router.route('/').post(isAuthenticated, bookValidationRules(), validateBook, createBook);
 
 /**
  * @swagger
@@ -173,7 +174,7 @@ router.route('/:id').get(getBook);
  *       404:
  *         description: The book was not found
  */
-router.route('/:id').put(bookValidationRules(), validateBook, updateBook);
+router.route('/:id').put(isAuthenticated, bookValidationRules(), validateBook, updateBook);
 
 /**
  * @swagger
@@ -194,6 +195,6 @@ router.route('/:id').put(bookValidationRules(), validateBook, updateBook);
  *       404:
  *         description: The book was not found
  */
-router.route('/:id').delete(deleteBook);
+router.route('/:id').delete(isAuthenticated, deleteBook);
 
 module.exports = router;
