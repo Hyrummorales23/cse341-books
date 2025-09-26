@@ -30,6 +30,17 @@ app.use(express.urlencoded({ extended: false }));
 // Session middleware
 app.use(session(sessionConfig)); // Fixed: session() function was missing
 
+// Add debugging middleware (temporary - remove for production)
+app.use((req, res, next) => {
+  console.log('=== SESSION DEBUG ===');
+  console.log('Session ID:', req.sessionID);
+  console.log('Authenticated:', req.isAuthenticated());
+  console.log('User:', req.user);
+  console.log('Cookies:', req.headers.cookie);
+  console.log('=====================');
+  next();
+});
+
 // Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
