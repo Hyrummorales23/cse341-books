@@ -61,16 +61,29 @@ router.get('/google',
  *     summary: Google OAuth callback URL
  *     tags: [Authentication]
  *     responses:
- *       302:
- *         description: Redirects to home page after successful login
+ *       200:
+ *         description: OAuth callback handled
  *       401:
  *         description: Authentication failed
  */
 router.get('/google/callback',
   passport.authenticate('google', { 
-    failureRedirect: '/auth/login-failed',
-    successRedirect: '/auth/login-success'
-  })
+    failureRedirect: '/auth/login-failed'
+    // Remove successRedirect - we'll handle it manually
+  }),
+  (req, res) => {
+    // Manual success handling to ensure session is maintained
+    console.log('=== GOOGLE CALLBACK SUCCESS ===');
+    console.log('Is authenticated after callback:', req.isAuthenticated());
+    console.log('User after callback:', req.user);
+    
+    if (req.isAuthenticated()) {
+      // Redirect to login-success with the session intact
+      res.redirect('/auth/login-success');
+    } else {
+      res.redirect('/auth/login-failed');
+    }
+  }
 );
 
 /**
@@ -102,13 +115,27 @@ router.get('/login-success', (req, res) => {
   console.log('Is authenticated:', req.isAuthenticated());
   console.log('User:', req.user);
   console.log('Session ID:', req.sessionID);
-  console.log('Session:', req.session);
+  console.log('Passport in session:', req.session.passport);
+  console.log('Full session:', req.session);
   
   if (!req.isAuthenticated()) {
-    console.log('NOT AUTHENTICATED - returning error');
+    console.log('NOT AUTHENTICATED - checking session.passport');
+    
+    // Check if passport data exists in session but isn't being deserialized
+    if (req.session.passport && req.session.passport.user) {
+      console.log('Passport user data exists in session:', req.session.passport.user);
+      return res.status(500).json({
+        success: false,
+        error: 'Session exists but user not deserialized',
+        sessionData: req.session.passport.user
+      });
+    }
+    
     return res.status(401).json({
       success: false,
-      error: 'Not authenticated after OAuth flow'
+      error: 'Not authenticated after OAuth flow',
+      sessionId: req.sessionID,
+      passportData: req.session.passport
     });
   }
 
@@ -242,6 +269,33 @@ router.get('/debug', (req, res) => {
     authenticated: req.isAuthenticated(),
     user: req.user,
     headers: req.headers
+  });
+});
+
+/**
+ * @swagger
+ * /auth/test-session:
+ *   get:
+ *     summary: Test session endpoint
+ *     tags: [Authentication]
+ *     responses:
+ *       200:
+ *         description: Session test results
+ */
+router.get('/test-session', (req, res) => {
+  console.log('=== TEST SESSION ===');
+  console.log('Session ID:', req.sessionID);
+  console.log('Session:', req.session);
+  console.log('Passport:', req.session.passport);
+  console.log('Is authenticated:', req.isAuthenticated());
+  console.log('User:', req.user);
+  
+  res.json({
+    sessionId: req.sessionID,
+    session: req.session,
+    passport: req.session.passport,
+    authenticated: req.isAuthenticated(),
+    user: req.user
   });
 });
 

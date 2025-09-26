@@ -4,15 +4,15 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 // Session configuration
 const sessionConfig = {
   secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
+  resave: true, // Changed to true for better session handling
+  saveUninitialized: true, // Changed to true to save session immediately
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // true in production
-    httpOnly: true, // Prevents client-side JS from reading the cookie
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Important for cross-origin
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   },
-  name: 'libraryapi.sid' // Give the cookie a specific name
+  name: 'libraryapi.sid'
 };
 
 // Function to initialize passport with Google strategy
@@ -24,14 +24,19 @@ const initializePassport = (googleClientId, googleClientSecret, googleCallbackUr
   const strategy = new GoogleStrategy({
     clientID: googleClientId,
     clientSecret: googleClientSecret,
-    callbackURL: googleCallbackUrl
-  }, (accessToken, refreshToken, profile, done) => {
+    callbackURL: googleCallbackUrl,
+    passReqToCallback: true // Important: pass the request to callback
+  }, (req, accessToken, refreshToken, profile, done) => {
+    // Enhanced profile handling
+    console.log('Google OAuth callback received profile:', profile.displayName);
+    
     // Return the entire profile
     return done(null, {
       id: profile.id,
       displayName: profile.displayName,
       emails: profile.emails,
-      photos: profile.photos
+      photos: profile.photos,
+      provider: profile.provider
     });
   });
 
@@ -39,13 +44,13 @@ const initializePassport = (googleClientId, googleClientSecret, googleCallbackUr
 
   // Serialize user to session
   passport.serializeUser((user, done) => {
-    console.log('Serializing user:', user.displayName);
+    console.log('Serializing user to session:', user.displayName);
     done(null, user);
   });
 
   // Deserialize user from session
   passport.deserializeUser((user, done) => {
-    console.log('Deserializing user:', user.displayName);
+    console.log('Deserializing user from session:', user ? user.displayName : 'No user');
     done(null, user);
   });
 };
