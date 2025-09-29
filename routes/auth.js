@@ -2,17 +2,6 @@ const express = require('express');
 const passport = require('passport');
 const router = express.Router();
 
-// Debug middleware for auth routes
-router.use((req, res, next) => {
-  console.log('=== AUTH ROUTE DEBUG ===');
-  console.log('Path:', req.path);
-  console.log('Session ID:', req.sessionID);
-  console.log('Authenticated:', req.isAuthenticated());
-  console.log('User:', req.user);
-  console.log('=====================');
-  next();
-});
-
 /**
  * @swagger
  * components:
@@ -70,7 +59,7 @@ router.get('/google',
 router.get('/google/callback',
   passport.authenticate('google', {
     failureRedirect: '/auth/failure',
-    successRedirect: '/' // Redirect to home instead of /auth/success
+    successRedirect: '/'
   })
 );
 
@@ -142,7 +131,6 @@ router.get('/failure', (req, res) => {
  *         description: Logout successful
  */
 router.get('/logout', (req, res) => {
-  console.log('Logging out user:', req.user);
   req.logout((err) => {
     if (err) {
       return res.status(500).json({
@@ -150,9 +138,12 @@ router.get('/logout', (req, res) => {
         error: 'Logout failed'
       });
     }
-    res.json({
-      success: true,
-      message: 'Logout successful'
+    // Destroy session completely
+    req.session.destroy(() => {
+      res.json({
+        success: true,
+        message: 'Logout successful'
+      });
     });
   });
 });

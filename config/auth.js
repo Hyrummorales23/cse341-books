@@ -4,15 +4,16 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 // Session configuration
 const sessionConfig = {
   secret: process.env.SESSION_SECRET,
-  resave: true, // Changed to true
-  saveUninitialized: true, // Changed to true
+  resave: false,
+  saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
+    secure: true, // Always true for HTTPS in production
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax' // Important for cross-origin
+    sameSite: 'none' // Required for cross-origin in production
   },
-  name: 'library.sid' // Specific cookie name
+  name: 'library.sid',
+  proxy: true // Important for Render
 };
 
 // Function to initialize passport with Google strategy

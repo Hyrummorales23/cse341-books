@@ -24,9 +24,12 @@ initializePassport(
 
 const app = express();
 
-// CORS configuration - CRITICAL for session cookies to work
+// Trust Render's proxy - CRITICAL for sessions
+app.set('trust proxy', 1);
+
+// CORS configuration
 app.use(cors({
-  origin: ['https://cse341-books-p8xd.onrender.com', 'http://localhost:8080'],
+  origin: ['https://cse341-books-p8xd.onrender.com'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
 }));
@@ -42,11 +45,16 @@ app.use(session(sessionConfig));
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Simple logging middleware
+// Enhanced logging middleware
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
   console.log('Session ID:', req.sessionID);
-  console.log('Authenticated:', req.isAuthenticated ? req.isAuthenticated() : 'N/A');
+  console.log('Authenticated:', req.isAuthenticated());
+  console.log('User:', req.user ? req.user.displayName : 'No user');
+  console.log('Headers:', {
+    cookie: req.headers.cookie,
+    'user-agent': req.headers['user-agent']
+  });
   next();
 });
 
