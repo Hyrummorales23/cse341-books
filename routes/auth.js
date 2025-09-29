@@ -2,6 +2,17 @@ const express = require('express');
 const passport = require('passport');
 const router = express.Router();
 
+// Debug middleware for auth routes
+router.use((req, res, next) => {
+  console.log('=== AUTH ROUTE DEBUG ===');
+  console.log('Path:', req.path);
+  console.log('Session ID:', req.sessionID);
+  console.log('Authenticated:', req.isAuthenticated());
+  console.log('User:', req.user);
+  console.log('=====================');
+  next();
+});
+
 /**
  * @swagger
  * components:
@@ -59,56 +70,9 @@ router.get('/google',
 router.get('/google/callback',
   passport.authenticate('google', {
     failureRedirect: '/auth/failure',
-    successRedirect: '/auth/success'
+    successRedirect: '/' // Redirect to home instead of /auth/success
   })
 );
-
-/**
- * @swagger
- * /auth/success:
- *   get:
- *     summary: Login success page
- *     tags: [Authentication]
- *     responses:
- *       200:
- *         description: Returns login success message
- */
-router.get('/success', (req, res) => {
-  if (!req.isAuthenticated()) {
-    return res.status(401).json({
-      success: false,
-      error: 'Not authenticated'
-    });
-  }
-
-  res.json({
-    success: true,
-    message: 'Login successful!',
-    user: {
-      id: req.user.id,
-      displayName: req.user.displayName,
-      email: req.user.emails ? req.user.emails[0].value : 'No email',
-      photo: req.user.photos ? req.user.photos[0].value : 'No photo'
-    }
-  });
-});
-
-/**
- * @swagger
- * /auth/failure:
- *   get:
- *     summary: Login failed page
- *     tags: [Authentication]
- *     responses:
- *       401:
- *         description: Returns login failure message
- */
-router.get('/failure', (req, res) => {
-  res.status(401).json({
-    success: false,
-    error: 'Google authentication failed'
-  });
-});
 
 /**
  * @swagger
@@ -152,6 +116,23 @@ router.get('/user', (req, res) => {
 
 /**
  * @swagger
+ * /auth/failure:
+ *   get:
+ *     summary: Login failed page
+ *     tags: [Authentication]
+ *     responses:
+ *       401:
+ *         description: Returns login failure message
+ */
+router.get('/failure', (req, res) => {
+  res.status(401).json({
+    success: false,
+    error: 'Google authentication failed'
+  });
+});
+
+/**
+ * @swagger
  * /auth/logout:
  *   get:
  *     summary: Logout user
@@ -161,6 +142,7 @@ router.get('/user', (req, res) => {
  *         description: Logout successful
  */
 router.get('/logout', (req, res) => {
+  console.log('Logging out user:', req.user);
   req.logout((err) => {
     if (err) {
       return res.status(500).json({

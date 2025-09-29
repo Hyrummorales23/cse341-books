@@ -4,6 +4,7 @@ const connectDB = require('./config/database');
 const errorHandler = require('./middleware/errorHandler');
 const passport = require('passport');
 const session = require('express-session');
+const cors = require('cors');
 
 // Load env vars FIRST
 dotenv.config();
@@ -23,20 +24,29 @@ initializePassport(
 
 const app = express();
 
+// CORS configuration - CRITICAL for session cookies to work
+app.use(cors({
+  origin: ['https://cse341-books-p8xd.onrender.com', 'http://localhost:8080'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+}));
+
 // Body parser middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // Session middleware
-app.use(session(sessionConfig)); // Fixed: session() function was missing
+app.use(session(sessionConfig));
 
 // Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
 
-// debugging middleware (temporary - remove for production)
+// Simple logging middleware
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+  console.log('Session ID:', req.sessionID);
+  console.log('Authenticated:', req.isAuthenticated ? req.isAuthenticated() : 'N/A');
   next();
 });
 
